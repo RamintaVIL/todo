@@ -17,7 +17,14 @@ toastCloseDOM.addEventListener('click', () => {
     toastDOM.classList.remove('active');
 })
 
-const todoData = [];
+const localData = localStorage.getItem('tasks');
+let todoData = [];
+
+if (localData !== null) {
+    const localDataArray = JSON.parse(localData);
+    todoData = localDataArray;
+    renderList();
+}
 
 submitButtonDOM.addEventListener('click', e => {
     e.preventDefault();
@@ -29,9 +36,12 @@ submitButtonDOM.addEventListener('click', e => {
     }
 
     todoData.push({
+        state: 'todo',
         text: textInputDOM.value.trim(),
         createdAt: Date.now(),
     });
+    // isirasome i atminti
+    localStorage.setItem('tasks', JSON.stringify(todoData));
     renderList();
     // jos funkcija yra aprasyta apacioje, mes optimizavome koda.
     showToastSuccess('Įrašas sėkmingai sukurtas.');
@@ -54,19 +64,22 @@ function renderTaskList() {
     let HTML = '';
 
     for (const todo of todoData) {
+        const completed = todo.state === 'done' ? 'completed' : '';
         HTML += `
-            <article class="item">
+            <article class="item ${completed}">
                 <div class="date">${formatTime(todo.createdAt)}</div>
+                <div class='state'>Atlikta</div>
                 <div class="text">${todo.text}</div>
                 <form class="hidden">
-                    <input type="text">
+                    <input type="text" value='${todo.text}'>
                     <button type="submit">Update</button>
                     <button type="button">Cancel</button>
                 </form>
                 <div class="actions">
                     <button>Done</button>
                     <div class="divider"></div>
-                    <button>Edit</button>
+                    ${todo.state === 'done' ? '' : '<button>Edit</button>'}
+                    // <button>Edit</button>
                     <button>Delete</button>
                 </div>
             </article>`;
@@ -101,11 +114,18 @@ function renderTaskList() {
             renderTaskList();
             showToastSuccess('Įrašo informacija sėkmingai atnaujinta.');
         });
-
+    
         const cancelDOM = buttonsDOM[1];
         cancelDOM.addEventListener('click', () => {
-            articleEditFormDOM.classList.add('hidden');
+            articleDOM.classList.add('completed');
             showToastInfo('Įrašo informacijos redagavimas baigtas be jokių pakeitimų');
+        });
+
+        const doneDOM = buttonsDOM[2];
+        doneDOM.addEventListener('click', () => {
+            todoData[i].state = 'done'
+            articleEditFormDOM.classList.add('hidden');
+            localStorage.setItem('tasks', JSON.stringify(todoData));
         });
 
         const editDOM = buttonsDOM[3];
@@ -180,13 +200,13 @@ function showToastSuccess(msg) {
     showToast('success', 'Pavyko', msg);
 }
 function showToastInfo(msg) {
-    showToast('success', 'Informacija', msg);
+    showToast('info', 'Informacija', msg);
 }
 function showToastWarning(msg) {
-    showToast('success', 'Klaida', msg);
+    showToast('warning', 'Klaida', msg);
 }
 function showToastError(msg) {
-    showToast('success', 'Klaida', msg);
+    showToast('error', 'Klaida', msg);
 }
 
 // cia mano sprendimas
@@ -220,3 +240,31 @@ function formatTime(timeInMs) {
 // read     array.map()
 // update   array[i] = {updated data}
 // delete   array.splice(i, 1)
+
+
+//Rikiavimas:
+const sortingListDOM = document.querySelector('.list-actions');
+const sortingButtonsDOM = sortingListDOM.querySelectorAll('button');
+
+//Sorting: Laikas 0-9
+const btnTime09DOM = sortingButtonsDOM[0];
+btnTime09DOM.addEventListener('click', () => {
+    const activeBtn = sortingListDOM.querySelector('.active');
+    activeBtn.classList.remove('.active');
+    todoData.sort(a, b => a.createdAt - b.createdAt);
+    renderTaskList();
+})
+// Laikas 9-0
+const btnTime90DOM = sortingButtonsDOM[1];
+
+// Spalva A-Z
+const btnColorAZDOM = sortingButtonsDOM[2];
+
+// Spalva Z-A
+const btnColorZADOM = sortingButtonsDOM[3];
+
+// Pavadinimas A-Z
+const btnTitleAZDOM = sortingButtonsDOM[4];
+
+// Pavadinimas Z-A
+const btnTitleZADOM = sortingButtonsDOM[5];

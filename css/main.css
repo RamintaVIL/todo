@@ -25,6 +25,9 @@ form > input,
 form > button {
     font-size: 2rem;
     padding: 0.3em 0.5em;
+    width: 100%;
+    min-height: 3rem;
+    line-height: 2rem;
 }
 /* auto-fit siuo atveju naudojame del responsive dizaino, jis parenka kiek stulpeliu matysime kai maziname ekrana. 300px minimalus ekrano plotis, kuris gali kisti*/
 .list {
@@ -47,6 +50,23 @@ form > button {
     gap: 1rem;
     padding: 1rem;
     border: 1px solid #ccc;
+    position: relative;
+}
+.list .item.completed .state {
+    display: block;
+}
+.list > .item.completed {
+    background-color: #999;
+
+}
+.list .state {
+    display: none;
+    padding: 0.3em 0.2em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: green;
+    color: #fff;
 }
 .list .text {
     font-size: 1.5rem;
@@ -151,3 +171,24 @@ form > button {
     width: 2rem;
     height: 2rem;
 }
+
+.list-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.list-actions .title{
+    font-weight: bold;
+}
+
+.list-actions button {
+    font-size: 1.1rem;
+    padding:0.2rem 0.5rem;
+}
+.list-actions button.active {
+    background-color: #36f;
+    color: #fff;
+}
+
